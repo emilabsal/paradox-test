@@ -12,16 +12,40 @@
       <search-item @input="search" />
     </div>
     <div class="blocks">
-      <div class="categories">
-        <CategoryItem
-          @dragstart="startDrag"
-          class="categories-category"
-          v-for="(item, index) in categories"
-          :key="index"
-          :category="item"
-        />
-      </div>
-      <div class="elements"></div>
+      <draggable
+        v-model="categories"
+        :group="{ name: 'categories', pull: 'clone', put: false }"
+        v-bind="dragOptions"
+        @start="drag = true"
+        @end="drag = false"
+        item-key="index"
+        tag="transition-group"
+        :component-data="{ name: 'fade' }"
+        handle=".category-button-drag"
+      >
+        <template #item="{ element }">
+          <div class="categories">
+            <category-item class="categories-category" :category="element" />
+          </div>
+        </template>
+      </draggable>
+      <draggable
+        v-model="categories"
+        :group="{ name: 'categories', pull: ['categories'], put: false }"
+        v-bind="dragOptions"
+        @start="drag = true"
+        @end="drag = false"
+        item-key="index"
+        tag="transition-group"
+        :component-data="{ name: 'fade' }"
+        handle=".category-button-drag"
+      >
+        <template #item="{ element }">
+          <div class="elements">
+            <element-item :element="element" v-if="element" />
+          </div>
+        </template>
+      </draggable>
     </div>
   </main>
 </template>
@@ -30,7 +54,8 @@
 import UiButton from "./components/ui/UiButton.vue";
 import SearchItem from "./components/SearchItem.vue";
 import CategoryItem from "./components/CategoryItem.vue";
-import { ref } from "vue";
+import ElementItem from "./components/ElementItem.vue";
+import draggable from "vuedraggable";
 
 export default {
   name: "App",
@@ -38,72 +63,91 @@ export default {
     UiButton,
     SearchItem,
     CategoryItem,
+    ElementItem,
+    draggable,
   },
-  setup() {
-    const items = ref([]);
-    const categories = ref([
-      {
-        title: "Обязательные для всех",
-        circles: 3,
-        item: [{ background: "red" }],
-        desc: "Документы, обязательные для всех сотрудников без исключения",
-      },
-      {
-        title: "Нет",
-        circles: 2,
-        item: [{ background: "red" }],
-        desc: "Документы, обязательные для всех сотрудников без исключения",
-      },
-      {
-        title: "Обязательные для всех",
-        circles: 3,
-        item: [{ background: "red" }],
-        desc: "Документы, обязательные для всех сотрудников без исключения",
-      },
-      {
-        title: "Обязательные для всех",
-        circles: 3,
-        item: [{ background: "red" }],
-        desc: "Документы, обязательные для всех сотрудников без исключения",
-      },
-    ]);
-
-    // function onDragStart(event, item) {}
-    // function onDrop(event, categories.title) {}
-
-    return {
-      items,
-      categories,
-    };
-  },
-
   data() {
     return {
-      cats: this.categories,
+      hello: "",
+      drag: false,
+      categories: [
+        {
+          title: "Обязательные для всех",
+          circles: [
+            { background: "red" },
+            { background: "red" },
+            { background: "red" },
+          ],
+          desc: "Документы, обязательные для всех сотрудников без исключения",
+          elements: [
+            {
+              title: "Паспорт",
+              circle: true,
+              require: true,
+              status: "Для всех",
+            },
+            {
+              title: "ИНН",
+              circle: false,
+              require: true,
+              status: "Для всех",
+            },
+          ],
+        },
+        {
+          title: "Обязательные для трудоустройства",
+          desc: "Документы, без которых невозможно трудоустройство человека на какую бы то ни было должность в компании вне зависимости от граж",
+        },
+        {
+          title: "Специальные",
+        },
+        {
+          elements: [
+            {
+              title: "Тестовое задание кандидата",
+              status:
+                "Россия, Белоруссия, Украина, администратор филиала, повар-сушист, повар-пиццмейкер, повар горячего цеха",
+            },
+          ],
+        },
+        {
+          elements: [
+            {
+              title: "Трудовой договор",
+            },
+          ],
+        },
+        {
+          elements: [
+            {
+              title: "Мед. книжка",
+            },
+          ],
+        },
+      ],
     };
   },
-  methods: {
-    search(val) {
-      console.log(val);
-      this.cats = this.categories.filter((item) => {
-        item.title === val;
-      });
+  methods: {},
+  computed: {
+    dragOptions() {
+      return {
+        animation: 200,
+        disabled: false,
+        ghostClass: "ghost",
+        chosenClass: "chosen",
+        dragClass: "drag",
+        onStart: function (e) {
+          console.log(e);
+          const hello = e.clone;
+          hello.style.background = "red";
+        },
+      };
     },
-  },
-  startDrag(evt, item) {
-    evt.dataTransfer.dropEffect = "move";
-    evt.dataTransfer.effectAllowed = "move";
-    evt.dataTransfer.setData("itemID", item.id);
-  },
-  onDrop(evt, list) {
-    const itemID = evt.dataTransfer.getData("itemID");
-    const item = this.items.find((item) => item.id == itemID);
-    item.list = list;
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main {
   padding: 38px 30px;
 }
@@ -156,4 +200,19 @@ export default {
 .categories-category + .categories-category {
   border-top: 0;
 }
+
+.ghost {
+  opacity: 0.2;
+}
+
+.elements {
+  margin-top: 14px;
+}
+
+// .drag {
+//   background: white;
+//   opacity: 15;
+//   border: 1px solid #dfe4ef;
+//   box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
+// }
 </style>

@@ -1,43 +1,50 @@
 
 <template>
-  <div
-    class="category"
-    @dragstart="$emit('dragstart', $event, item)"
-    @drop="$emit('drop', $event, categoryId)"
-  >
-    <div class="category-left">
-      <ui-button class="category-arrow" icon="chevron" />
-      <span class="category-title">{{ category.title }}</span>
-      <div class="category-circles" v-if="category.circles">
-        <span
-          v-for="(item, index) in category.circles"
-          :key="index"
-          class="category-circle"
-          :style="`background-color: ${
-            item.background || '#FF238D'
-          }; border: 1px solid ${item.border || 'transparent'}; box-shadow: ${
-            item.shadow
-          };`"
-        ></span>
+  <div class="category-wrapper">
+    <div class="category">
+      <div class="category-left">
+        <ui-button class="category-arrow" icon="chevron" />
+        <span class="category-title">{{ category.title }}</span>
+        <div class="category-circles" v-if="category.circles">
+          <span
+            v-for="(circle, index) in category.circles"
+            :key="index"
+            class="category-circle"
+            :style="`background-color: ${
+              circle.background || '#FF238D'
+            }; border: 1px solid ${
+              circle.border || 'transparent'
+            }; box-shadow: ${circle.shadow};`"
+          ></span>
+        </div>
+        <p class="category-desc" v-if="category.desc">
+          {{ category.desc }}
+        </p>
       </div>
-      <p class="category-desc" v-if="category.desc">
-        {{ category.desc }}
-      </p>
+      <div class="category-controls">
+        <ui-button class="category-button" icon="edit" />
+        <ui-button class="category-button" icon="delete" />
+        <ui-button class="category-button category-button-drag" icon="drag" />
+      </div>
     </div>
-    <div class="category-controls">
-      <ui-button class="category-button" icon="edit" />
-      <ui-button class="category-button" icon="delete" />
-      <ui-button class="category-button" icon="drag" draggable="true" />
+    <div class="elements" v-if="category.elements">
+      <element-item
+        :element="item"
+        v-for="(item, index) in category.elements"
+        :key="index"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import UiButton from "@/components/ui/UiButton.vue";
+import ElementItem from "@/components/ElementItem.vue";
 
 export default {
   components: {
     UiButton,
+    ElementItem,
   },
   props: {
     category: {
@@ -49,6 +56,7 @@ export default {
         border: String,
         shadow: String,
       },
+      elements: Array,
     },
   },
 };
@@ -112,15 +120,25 @@ export default {
 
   &:last-child {
     cursor: move;
-    cursor: grab;
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
   }
 
-  &:first-child:active {
+  &:last-child:active {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+  }
+}
+
+.elements {
+  width: calc(100% - 16px);
+  margin-left: auto;
+
+  & > .element {
+    border-top: 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
   }
 }
 </style>
