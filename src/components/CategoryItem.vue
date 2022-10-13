@@ -1,9 +1,23 @@
 
 <template>
-  <div class="category-wrapper">
+  <div
+    :class="
+      show && category.elements.length !== 0
+        ? 'categories-category'
+        : 'categories-category categories-border'
+    "
+  >
     <div class="category">
       <div class="category-left">
-        <ui-button class="category-arrow" icon="chevron" />
+        <ui-button
+          :class="
+            show && category.elements.length !== 0
+              ? 'category-arrow-transform'
+              : 'category-arrow'
+          "
+          icon="chevron"
+          @click="show = !show"
+        />
         <span class="category-title">{{ category.title }}</span>
         <div class="category-circles" v-if="category.circles">
           <span
@@ -27,37 +41,37 @@
         <ui-button class="category-button category-button-drag" icon="drag" />
       </div>
     </div>
-    <div class="elements" v-if="category.elements">
-      <element-item
-        :element="item"
-        v-for="(item, index) in category.elements"
-        :key="index"
-      />
-    </div>
+    <transition name="slide">
+      <div class="elements" v-show="show" v-if="category.elements.lenght !== 0">
+        <slot></slot>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import UiButton from "@/components/ui/UiButton.vue";
-import ElementItem from "@/components/ElementItem.vue";
 
 export default {
   components: {
     UiButton,
-    ElementItem,
   },
   props: {
     category: {
       title: String,
       desc: String,
-      circles: Number,
-      item: {
+      circles: {
         background: String,
         border: String,
         shadow: String,
       },
       elements: Array,
     },
+  },
+  data() {
+    return {
+      show: false,
+    };
   },
 };
 </script>
@@ -82,6 +96,7 @@ export default {
   border-radius: 50%;
   border: 1px solid #d3d8df;
   margin-right: 14px;
+  transition: 0.3s;
 }
 
 .category-title {
@@ -103,10 +118,27 @@ export default {
   flex-shrink: 0;
 }
 
+.categories-category + .categories-category {
+  border-top: 0;
+}
+
+.categories-border:not(:last-child) .category {
+  border-bottom: none;
+}
+
 .category-desc {
   font-size: 11px;
   line-height: 108%;
   color: #8e9cbb;
+}
+.category-arrow-transform {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #d3d8df;
+  margin-right: 14px;
+  transform: rotate(180deg);
+  transition: 0.3s;
 }
 
 .category-controls {
@@ -140,5 +172,18 @@ export default {
       border-bottom: 0;
     }
   }
+}
+
+.slide-enter-active {
+  transition: opacity 0.4s;
+}
+
+.slide-leave-active {
+  transition: opacity 0.1s;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
 }
 </style>

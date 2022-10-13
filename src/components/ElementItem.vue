@@ -1,14 +1,26 @@
 <template>
   <div class="element">
-    <span class="element-title">{{ element.title }}</span>
-    <span class="element-circle" v-if="element.circle"></span>
-    <span class="element-require" v-if="element.require">Обязательный</span>
-    <span class="element-status">{{ element.status }}</span>
+    <div class="element-left">
+      <span class="element-title">{{ element.title }}</span>
+      <span class="element-circle" v-if="element.circle"></span>
+      <span class="element-require" v-if="element.require">Обязательный</span>
+      <span class="element-status">{{ element.status }}</span>
+    </div>
+    <div class="element-controls">
+      <ui-button class="element-button" icon="edit" />
+      <ui-button class="element-button" icon="delete" />
+      <ui-button class="element-button element-button-drag" icon="drag" />
+    </div>
   </div>
 </template>
 
 <script>
+import UiButton from "@/components/ui/UiButton.vue";
+
 export default {
+  components: {
+    UiButton,
+  },
   props: {
     element: {
       title: String,
@@ -30,6 +42,11 @@ export default {
 .element {
   border: 1px solid #dfe4ef;
   padding: 9px 11px;
+  padding-right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
 .element-title {
@@ -62,5 +79,29 @@ export default {
   display: inline-block;
   margin-left: 16px;
   color: #8e9cbb;
+}
+
+.element-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.element-button {
+  border: none;
+
+  &:last-child {
+    cursor: move;
+  }
+
+  &:last-child:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+  }
+}
+
+.categories-category:last-child .element:last-child {
+  border-bottom: 1px solid #dfe4ef;
 }
 </style>

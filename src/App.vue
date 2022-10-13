@@ -12,40 +12,56 @@
       <search-item @input="search" />
     </div>
     <div class="blocks">
-      <draggable
-        v-model="categories"
-        :group="{ name: 'categories', pull: 'clone', put: false }"
-        v-bind="dragOptions"
-        @start="drag = true"
-        @end="drag = false"
-        item-key="index"
-        tag="transition-group"
-        :component-data="{ name: 'fade' }"
-        handle=".category-button-drag"
-      >
-        <template #item="{ element }">
-          <div class="categories">
-            <category-item class="categories-category" :category="element" />
-          </div>
-        </template>
-      </draggable>
-      <draggable
-        v-model="categories"
-        :group="{ name: 'categories', pull: ['categories'], put: false }"
-        v-bind="dragOptions"
-        @start="drag = true"
-        @end="drag = false"
-        item-key="index"
-        tag="transition-group"
-        :component-data="{ name: 'fade' }"
-        handle=".category-button-drag"
-      >
-        <template #item="{ element }">
-          <div class="elements">
-            <element-item :element="element" v-if="element" />
-          </div>
-        </template>
-      </draggable>
+      <div class="categories-block">
+        <draggable
+          v-model="blocks.categories"
+          :group="{
+            name: 'categories',
+            pull: ['category'],
+            put: ['category'],
+          }"
+          v-bind="dragOptions"
+          @start="drag = true"
+          @end="drag = false"
+          item-key="index"
+          handle=".category-button-drag"
+        >
+          <template #item="{ element }">
+            <category-item :category="element">
+              <!-- <div class="categories-elements"> -->
+              <draggable
+                v-model="element.elements"
+                group="elements"
+                v-bind="dragOptions"
+                @start="drag = true"
+                @end="drag = false"
+                item-key="index"
+                handle=".element-button-drag"
+              >
+                <template #item="{ element }">
+                  <element-item :element="element" />
+                </template>
+              </draggable>
+              <!-- </div> -->
+            </category-item>
+          </template>
+        </draggable>
+      </div>
+      <div class="elements-common">
+        <draggable
+          :list="blocks.elements"
+          :group="{ name: 'elements', pull: 'elements', put: true }"
+          v-bind="dragElementOptions"
+          @start="drag = true"
+          @end="drag = false"
+          item-key="index"
+          handle=".element-button-drag"
+        >
+          <template #item="{ element }">
+            <element-item :element="element" />
+          </template>
+        </draggable>
+      </div>
     </div>
   </main>
 </template>
@@ -68,66 +84,95 @@ export default {
   },
   data() {
     return {
-      hello: "",
-      drag: false,
-      categories: [
-        {
-          title: "Обязательные для всех",
-          circles: [
-            { background: "red" },
-            { background: "red" },
-            { background: "red" },
-          ],
-          desc: "Документы, обязательные для всех сотрудников без исключения",
-          elements: [
-            {
-              title: "Паспорт",
-              circle: true,
-              require: true,
-              status: "Для всех",
-            },
-            {
-              title: "ИНН",
-              circle: false,
-              require: true,
-              status: "Для всех",
-            },
-          ],
-        },
-        {
-          title: "Обязательные для трудоустройства",
-          desc: "Документы, без которых невозможно трудоустройство человека на какую бы то ни было должность в компании вне зависимости от граж",
-        },
-        {
-          title: "Специальные",
-        },
-        {
-          elements: [
-            {
-              title: "Тестовое задание кандидата",
-              status:
-                "Россия, Белоруссия, Украина, администратор филиала, повар-сушист, повар-пиццмейкер, повар горячего цеха",
-            },
-          ],
-        },
-        {
-          elements: [
-            {
-              title: "Трудовой договор",
-            },
-          ],
-        },
-        {
-          elements: [
-            {
-              title: "Мед. книжка",
-            },
-          ],
-        },
-      ],
+      show: false,
+      drag: true,
+      blocks: {
+        categories: [
+          {
+            title: "Обязательные для всех",
+            circles: [
+              { background: "#FF238D" },
+              { background: "#FFB800" },
+              {
+                background: "#FF8D23",
+                border: "#000000",
+                shadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+              },
+            ],
+            desc: "Документы, обязательные для всех сотрудников без исключения",
+            elements: [
+              {
+                title: "Паспорт",
+                circle: true,
+                require: true,
+                status: "Для всех",
+              },
+              {
+                title: "ИНН",
+                circle: false,
+                require: true,
+                status: "Для всех",
+              },
+            ],
+          },
+          {
+            title: "Обязательные для трудоустройства",
+            desc: "Документы, без которых невозможно трудоустройство человека на какую бы то ни было должность в компании вне зависимости от граж",
+            elements: [
+              {
+                title: "Паспорт",
+                circle: true,
+                require: true,
+                status: "Для всех",
+              },
+              {
+                title: "ИНН",
+                circle: false,
+                require: true,
+                status: "Для всех",
+              },
+            ],
+          },
+          {
+            title: "Специальные",
+            elements: [
+              {
+                title: "Паспорт",
+                circle: true,
+                require: true,
+                status: "Для всех",
+              },
+              {
+                title: "ИНН",
+                circle: false,
+                require: true,
+                status: "Для всех",
+              },
+            ],
+          },
+        ],
+        elements: [
+          {
+            title: "Тестовое задание кандидата",
+            circle: false,
+            require: false,
+            status:
+              "Россия, Белоруссия, Украина, администратор филиала, повар-сушист, повар-пиццмейкер, повар горячего цеха",
+          },
+          {
+            title: "Трудовой договор",
+            circle: true,
+            require: false,
+          },
+          {
+            title: "Мед. книжка",
+            circle: false,
+            require: false,
+          },
+        ],
+      },
     };
   },
-  methods: {},
   computed: {
     dragOptions() {
       return {
@@ -136,11 +181,15 @@ export default {
         ghostClass: "ghost",
         chosenClass: "chosen",
         dragClass: "drag",
-        onStart: function (e) {
-          console.log(e);
-          const hello = e.clone;
-          hello.style.background = "red";
-        },
+      };
+    },
+    dragElementOptions() {
+      return {
+        animation: 200,
+        disabled: false,
+        ghostClass: "ghostElement",
+        chosenClass: "chosenElement",
+        dragClass: "dragElement",
       };
     },
   },
@@ -197,8 +246,19 @@ export default {
   max-width: 1190px;
 }
 
-.categories-category + .categories-category {
-  border-top: 0;
+.categories-elements {
+  transition: 0.3s;
+  // animation: slide 0.5s linear forwards;
+}
+
+@keyframes slide {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: auto;
+  }
 }
 
 .ghost {
@@ -206,13 +266,38 @@ export default {
 }
 
 .elements {
-  margin-top: 14px;
+  .element {
+    border-top: none;
+  }
+
+  .element:last-child {
+    border-bottom: none;
+    border-top: none;
+  }
 }
 
-// .drag {
-//   background: white;
-//   opacity: 15;
-//   border: 1px solid #dfe4ef;
-//   box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
-// }
+.elements-common {
+  margin-top: 14px;
+
+  .element:not(:last-child) {
+    border-bottom: none;
+  }
+}
+
+.chosen {
+  opacity: 1 !important;
+}
+.drag {
+  opacity: 0 !important;
+}
+.ghost {
+  background: #0066ff;
+  height: 5px;
+  width: 100%;
+  opacity: 1;
+  overflow: hidden;
+  // opacity: 15;
+  // border: 1px solid #dfe4ef;
+  // box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
+}
 </style>
