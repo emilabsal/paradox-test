@@ -5,8 +5,7 @@
       class="search-input"
       type="text"
       placeholder="Поиск"
-      @input="$emit('input', $event.target.value)"
-      ref="input"
+      @input="$emit('input-event', $event.target.value)"
     />
     <transition name="slide">
       <div class="search-line"></div>
@@ -54,7 +53,7 @@ export default {
       // });
     },
     emptyValue() {
-      this.$refs.input.value = "";
+      this.search = "";
       this.close = false;
     },
   },

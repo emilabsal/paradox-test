@@ -9,7 +9,7 @@
       </div>
     </header>
     <div class="search-block">
-      <search-item @input="search" />
+      <search-item @input-event="searchFunc" />
     </div>
     <div class="blocks">
       <div class="categories-block">
@@ -28,11 +28,10 @@
         >
           <template #item="{ element }">
             <category-item :category="element">
-              <!-- <div class="categories-elements"> -->
               <draggable
                 v-model="element.elements"
                 group="elements"
-                v-bind="dragOptions"
+                v-bind="dragElementOptions"
                 @start="drag = true"
                 @end="drag = false"
                 item-key="index"
@@ -42,7 +41,6 @@
                   <element-item :element="element" />
                 </template>
               </draggable>
-              <!-- </div> -->
             </category-item>
           </template>
         </draggable>
@@ -84,6 +82,7 @@ export default {
   },
   data() {
     return {
+      data: "",
       show: false,
       drag: true,
       blocks: {
@@ -173,23 +172,41 @@ export default {
       },
     };
   },
+  methods: {
+    searchFunc(val) {
+      if (val === "") {
+        return false;
+      } else {
+        this.blocks.categories = this.blocks.categories.filter((item) => {
+          item.title.toLowerCase().indexOf(val.toLowerCase()) > -1;
+        });
+      }
+
+      // console.log(this.data);
+      // }
+    },
+  },
   computed: {
     dragOptions() {
       return {
         animation: 200,
         disabled: false,
+        forceFallback: true,
         ghostClass: "ghost",
         chosenClass: "chosen",
         dragClass: "drag",
+        fallbackClass: "fallback",
       };
     },
     dragElementOptions() {
       return {
         animation: 200,
         disabled: false,
+        forceFallback: true,
         ghostClass: "ghostElement",
         chosenClass: "chosenElement",
         dragClass: "dragElement",
+        fallbackClass: "fallbackElement",
       };
     },
   },
@@ -246,25 +263,6 @@ export default {
   max-width: 1190px;
 }
 
-.categories-elements {
-  transition: 0.3s;
-  // animation: slide 0.5s linear forwards;
-}
-
-@keyframes slide {
-  0% {
-    height: 0;
-  }
-
-  100% {
-    height: auto;
-  }
-}
-
-.ghost {
-  opacity: 0.2;
-}
-
 .elements {
   .element {
     border-top: none;
@@ -285,19 +283,59 @@ export default {
 }
 
 .chosen {
-  opacity: 1 !important;
+  opacity: 1;
 }
+
 .drag {
-  opacity: 0 !important;
+  opacity: 1;
 }
+
+.chosenElement {
+  opacity: 1;
+}
+.dragElement {
+  opacity: 1;
+}
+
+.fallbackElement {
+  background: #ffffff;
+  border: 1px solid #dfe4ef;
+  box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
+  height: 38px !important;
+}
+
+.fallback {
+  background: #ffffff;
+  border: 1px solid #dfe4ef;
+  box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
+  height: 49px !important;
+}
+
+.ghostElement {
+  background: #0066ff;
+  height: 5px;
+  padding: 0;
+  width: 100%;
+  opacity: 1;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0066ff;
+  }
+}
+
 .ghost {
   background: #0066ff;
   height: 5px;
   width: 100%;
   opacity: 1;
   overflow: hidden;
-  // opacity: 15;
-  // border: 1px solid #dfe4ef;
-  // box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
 }
 </style>

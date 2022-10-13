@@ -47,6 +47,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  background-color: #fff;
 }
 
 .element-title {
