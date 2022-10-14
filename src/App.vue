@@ -9,12 +9,17 @@
       </div>
     </header>
     <div class="search-block">
-      <search-item @input-event="searchFunc" />
+      <search-item
+        :searching="search"
+        @input-event="inputEvent"
+        :closing="close"
+        @close-click="closeClick"
+      />
     </div>
     <div class="blocks">
       <div class="categories-block">
         <draggable
-          v-model="blocks.categories"
+          v-model="searchFunc"
           :group="{
             name: 'categories',
             pull: ['category'],
@@ -29,7 +34,7 @@
           <template #item="{ element }">
             <category-item :category="element">
               <draggable
-                v-model="element.elements"
+                :list="element.elements"
                 group="elements"
                 v-bind="dragElementOptions"
                 @start="drag = true"
@@ -47,7 +52,7 @@
       </div>
       <div class="elements-common">
         <draggable
-          :list="blocks.elements"
+          v-model="searchF"
           :group="{ name: 'elements', pull: 'elements', put: true }"
           v-bind="dragElementOptions"
           @start="drag = true"
@@ -82,7 +87,9 @@ export default {
   },
   data() {
     return {
-      data: "",
+      value: "",
+      close: false,
+      search: "",
       show: false,
       drag: true,
       blocks: {
@@ -173,20 +180,30 @@ export default {
     };
   },
   methods: {
-    searchFunc(val) {
-      if (val === "") {
-        return false;
+    inputEvent(val) {
+      if (val !== "") {
+        this.close = true;
       } else {
-        this.blocks.categories = this.blocks.categories.filter((item) => {
-          item.title.toLowerCase().indexOf(val.toLowerCase()) > -1;
-        });
+        this.close = false;
       }
-
-      // console.log(this.data);
-      // }
+      this.search = val;
+    },
+    closeClick() {
+      this.close = false;
+      this.search = "";
     },
   },
   computed: {
+    searchFunc() {
+      return this.blocks.categories.filter((item) => {
+        return item.title.toLowerCase().includes(this.search.toLowerCase());
+      });
+    },
+    searchF() {
+      return this.blocks.elements.filter((item) => {
+        return item.title.toLowerCase().includes(this.search.toLowerCase());
+      });
+    },
     dragOptions() {
       return {
         animation: 200,

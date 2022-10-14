@@ -5,6 +5,7 @@
       class="search-input"
       type="text"
       placeholder="Поиск"
+      v-model="search"
       @input="$emit('input-event', $event.target.value)"
     />
     <transition name="slide">
@@ -14,8 +15,8 @@
       <ui-button
         class="search-close"
         icon="close"
-        v-show="close"
-        @button-click="emptyValue"
+        v-show="closing"
+        @button-click="closeClick"
       />
     </transition>
   </div>
@@ -32,29 +33,22 @@ export default {
   },
   props: {
     filtered: Array,
+    searching: String,
+    closing: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      close: false,
-      filteredValue: this.filtered,
+      search: this.searching,
+      close: this.closing,
     };
   },
   methods: {
-    showClose() {
-      //   if (this.$refs.input.value !== "") {
-      //     this.close = true;
-      //   } else {
-      //     this.close = false;
-      //   }
-      // console.log(this.$refs.input.value);
-      // this.filteredValue.filter((item) => {
-      //   item.title.toLowerCase().indexOf(this.$refs.input.value.toLowerCase()) >
-      //     -1;
-      // });
-    },
-    emptyValue() {
+    closeClick() {
+      this.$emit("close-click");
       this.search = "";
-      this.close = false;
     },
   },
 };
