@@ -1,24 +1,30 @@
 # paradox-test
 
-## Project setup
-```
+Тестовый Vue-проект.
+
+## Стек
+
+- Vue
+- JavaScript / TypeScript
+- HTML
+- CSS / SCSS
+
+## Что показывает проект
+
+- Практическую frontend-разработку
+- Работу со структурой проекта и компонентным подходом
+- Подготовку к локальному запуску и дальнейшему развитию
+
+## Запуск
+
+```bash
 npm install
+npm run dev
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Если в проекте используется другой пакетный менеджер или скрипты отличаются, проверьте `package.json`.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Репозиторий
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- GitHub: [emilabsal/paradox-test](https://github.com/emilabsal/paradox-test)
+- Основная ветка: `master`
